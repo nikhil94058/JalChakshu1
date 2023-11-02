@@ -27,3 +27,14 @@ To learn more about Next.js, take a look at the following resources:
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
+
+## How to create Api Route Handler
+1. create an api folder and or whatever folder you will create under this folder will be the name of that api route 
+2. create a "route.ts | js" in it and write a (POST, GET, etc) functions in it and name it
+
+## How to add the images in the postgreSQL
+
+1. Create an HTML Form: (try to add the drag and drop)
+2. Handle Form Submission with JavaScript:
+3. Server-Side Handling:
+4. 
