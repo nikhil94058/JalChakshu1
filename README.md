@@ -28,7 +28,7 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 
-## How to create Api Route Handler
+<!-- ## How to create Api Route Handler
 1. create an api folder and or whatever folder you will create under this folder will be the name of that api route 
 2. create a "route.ts | js" in it and write a (POST, GET, etc) functions in it and name it
 
@@ -37,4 +37,4 @@ To learn more about Next.js, take a look at the following resources:
 1. Create an HTML Form: (try to add the drag and drop)
 2. Handle Form Submission with JavaScript:
 3. Server-Side Handling:
-4. 
+4.  -->
