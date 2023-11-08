@@ -28,15 +28,7 @@ export async function POST(req:NextRequest)
         // Convert the buffer to a Base64 string
         const base64String = buffer.toString('base64');
 
-
-
-            //inserting into db
-
-            const uploadToDb = async()=>
-            {
-                let time = new Date();
-                    //here i am passing a string data as my img_data to the db because it is further needed to be string
-
+             let time = new Date();
 const timeObj = {
     'title':time.toString(),
     'hour':time.getHours(),
@@ -46,7 +38,15 @@ const timeObj = {
     'year':time.getFullYear(),
     'minutes':time.getMinutes()
 }
-                try
+         
+
+            //inserting into db
+
+            const uploadToDb = async()=>
+            {
+               
+                    //here i am passing a string data as my img_data to the db because it is further needed to be string
+       try
                 {
                     await pool.connect();
                    const query= await pool.query('INSERT INTO  images_grievance (title , month, date, year,day ,hour, minutes,img_data,new_data) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',[timeObj.title,timeObj.month,timeObj.date,timeObj.year,timeObj.day,timeObj.hour,timeObj.minutes,null,base64String]);
@@ -73,10 +73,18 @@ const timeObj = {
             }
            const query =await uploadToDb();
 
+
+            const fetchQuery = await pool.query(
+            "SELECT img_id FROM images_grievance WHERE title = $1",
+            [timeObj.title]
+          );
+
+        //   console.log("quefetchQuery: ", fetchQuery.rows[0]);
+
              return NextResponse.json({
                     'success': true,
                     'message':'Image Uploaded Successufully',
-                    'details':await query,
+                    'details':await fetchQuery.rows[0],
                    },{
                     status:200,
                    })
@@ -93,11 +101,6 @@ const timeObj = {
     }
 }
 
-
-export async function GET()
-{
-    return NextResponse.json({message:'got your request'})
-}
 
 
 //imgId
