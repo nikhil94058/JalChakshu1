@@ -1,3 +1,7 @@
+//can write multiple middlewares using condition
+
+
+
 
 import { NextResponse, NextRequest } from 'next/server'
 
@@ -45,5 +49,5 @@ let resp = NextResponse.next();
 }
 
 export const config = {
-    matcher: ['/random' ],
+    matcher: ['/random','/imagePosting' ],
 };
