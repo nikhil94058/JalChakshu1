@@ -2,14 +2,15 @@
 'use client'
 
 
+
+
 /**
- *              About the page
+ *      about the page 
  * here the above page is responsible for the grievance upload of the user 
  * here we gave it option for the image and video upload and further added the video validation according to
  * which the duration of the video can't be more than 60 seconds
  * 
  */
-
 
 
 import {useState} from 'react'
@@ -287,6 +288,20 @@ export default function ImgUpload()
 
 </video> */}
 
+     
+     {/* <video controls width="440" height="460">
+        <source 
+        src= {(base64String.vid != '')? ("data:video/mp4;base64,"+base64String.vid):"/videos/DataRetrieve.mp4"}
+        type="video/mp4" />
+        Your browser does not support the video tag.
+      </video> */}
+     {/* <video controls width="440" height="460">
+        <source 
+        src= {(base64String.vid != '')? ("data:video/mp4;base64,"+base64String.vid):"/videos/DataRetrieve.mp4"}
+        type="video/mp4" />
+        Your browser does not support the video tag.
+      </video> */}
+
 <video   src= {(base64String.vid != '')? ("data:video/mp4;base64,"+base64String.vid):"/videos/DataRetrieve.mp4"}
 controls width="440" height="460"
 ></video>
@@ -313,4 +328,3 @@ controls width="440" height="460"
         </>
     )
 }
-

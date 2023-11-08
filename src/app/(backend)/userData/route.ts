@@ -14,6 +14,7 @@ export async function GET(req:NextRequest)
     const user = await verify(token,process.env.NEXT_PUBLIC_PRIVATE_KEY);
 
    return NextResponse.json({user:user})
+   
    } catch (e) {
     console.log("Error: ",e);
     return NextResponse.json({user:''})
