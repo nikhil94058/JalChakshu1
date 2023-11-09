@@ -49,5 +49,5 @@ let resp = NextResponse.next();
 }
 
 export const config = {
-    matcher: ['/random','/imagePosting' ],
+    matcher: ['/random','/imagePosting','/modifyGrievance' ],
 };
