@@ -1,15 +1,64 @@
 'use client'
 
-
 import { Span } from "next/dist/trace";
+import { type } from "os";
 import { useEffect, useState } from "react"
 
 export default function Page({ params }: { params: { id: string } }) {
 
-    const [id,setId] = useState('');
+
+   const [base64String,setBase64String] = useState({
+    img:'',
+    vid:''
+   });
+
+
    useEffect(()=>{
-    setId(params.id);
-   },[])
+    
+  
+   const vidRetrieve = async (id: string) => {
+  try {
+    const response = await fetch(process.env.NEXT_PUBLIC_ORIGIN + '/api/retrieve/retrieveVideo', {
+      method: 'post',
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({id: id})
+    });
+
+
+      const responseObj = await response.json();
+
+      console.log("responseobj: ", responseObj);
+
+      // Update the state using the state updater function
+      setBase64String(prevState => ({
+        ...prevState,
+        vid: responseObj.data
+      }))
+      
+      // console.log('base64: ', responseObj.data);
+   
+  } catch (e) {
+    console.log("An error occurred while fetching data: " + e.message);
+  }
+}
+
+      vidRetrieve(params.id)
+
+   },[params.id])
+
+
+  
+   useEffect(()=>{
+    // console.log("base64String" ,base64String.vid);
+    // setBase64String(...base64String);
+   },[base64String])
+
+
+
+
+
 
     // setId(params.id)
 
@@ -18,7 +67,7 @@ export default function Page({ params }: { params: { id: string } }) {
         jai mata di
         
 
-        <div>{id}</div>
+        <div>{params.id}</div>
 
 
       <div className="w-full h-full">
@@ -29,8 +78,11 @@ export default function Page({ params }: { params: { id: string } }) {
   
 
         <div className="w-[70%] h-full bg-cyan-300 m-2">
-show the previous upload here
-
+ <video 
+ src= {"data:video/mp4;base64,"+base64String.vid}
+ controls width="440" height="460"  >
+        
+      </video>
 
         </div>
 
@@ -59,6 +111,9 @@ show the previous upload here
 
 
       </div>
+
+    
+
 
         </>
 
