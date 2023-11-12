@@ -2,20 +2,28 @@ import { pool } from "@/app/(backend)/config/db";
 import { NextResponse } from "next/server";
 
 
-export async function GET()
+export async function POST(req:NextResponse)
 {
     try {
 
-        const vid_id = 2;
-        await pool.connect();
+         await pool.connect();
 
-        let query =  await pool.query("SELECT vid_data FROM videos_grievance WHERE vid_id = $1",[vid_id]);
-        const dataa = query.rows[0].vid_data;
-        console.log("this is the query got back: ");
+        let {id}=await req.json();
+
+
+        console.log(
+            "vid_id: ",id
+        )
+       
+
+        let query =  await pool.query("SELECT vid_data FROM videos_grievance WHERE vid_id = $1",[id]);
+        const dataa = query;
+        // const dataa=undefined;
+            // console.log("this is the query got back: ",dataa);
 
         return NextResponse.json({
             message:'Got the video',
-            data:dataa,
+            data: await dataa.rows[0].vid_data,
             success:true,
         },{
             status:200
