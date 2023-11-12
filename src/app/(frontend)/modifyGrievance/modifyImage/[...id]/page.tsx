@@ -2,20 +2,78 @@
 
 'use client'
 
-
-import { Span } from "next/dist/trace";
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from "react"
 
 export default function Page({ params }: { params: { id: String[] } }) {
 
+  const router = useRouter();
+
    const [ImageFiles,setImageFiles] = useState<File>();
+   const [id,setId] = useState( params.id[0]);
+  //  const [prevId , setPrevId] = useState('');
    
-    const {img_id,g_id} = params.id;
+    const g_id = params.id[1];
+    const img_id:any = params.id[0];
+
+    // console.log("params.id: ",params.id)
+
+    console.log("img_id:",img_id," g_id: ",g_id);
 
    const [base64String,setBase64String] = useState({
     img:'',
     vid:''
    });
+
+
+   const changeSlug=async (id:any)=>
+   {
+    router.push(`/modifyGrievance/modifyImage/${id}/${g_id}`, { scroll: false })
+   }
+
+   
+      //  FUNCTION for image retrieval
+
+    const imgRetrieve = async (id:String)=>{
+        try {
+
+             const response = await fetch(process.env.NEXT_PUBLIC_ORIGIN + '/api/retrieve/retrieveImg',{
+                method:'post',
+                headers:{
+                  'Content-type':'application/json'
+                },
+                body:JSON.stringify({id:id})
+            });
+            //setting the base64 string
+            const responseObj = await response.json();
+            
+            // console.log("responseObj: ",responseObj)
+            
+            //here i am pasting the base64String along with required the required string to the src of the img
+            setBase64String({...base64String,img:responseObj.data});
+            // console.log("base64inside:",base64String)
+          
+        } catch (e) {
+            console.log("some error occurred while retrieval: ",e.message)
+        }
+
+        // console.log("base64:",base64String);
+    }
+
+
+    useEffect(()=>{
+   setId(img_id);
+    imgRetrieve((id || params.id[0]));
+    changeSlug((id || params.id[0]));
+
+   },[params.id])
+
+
+   useEffect(()=>{
+
+    // console.log("imgdata; ",base64String.img);
+  
+   },[base64String,id])
 
    //methods to change the image media of the grievance
 
@@ -24,18 +82,15 @@ export default function Page({ params }: { params: { id: String[] } }) {
    
 
     //FUNCTION for image upload
-    const ImageUpload=async (e:React.FormEvent<HTMLFormElement>)=>{
+    const ImageUpload=async (e:any)=>{
         e.preventDefault();
 
-         if(!ImageFiles) {console.log("can't able to find the imageresponse");return -1;}
+         if(!ImageFiles) {console.log("can't able to find the imageresponse");}
 
          try {
             
              const data = new FormData();
              data.set('file',ImageFiles);
-
-
-             
 
                 const response = await fetch(process.env.NEXT_PUBLIC_ORIGIN + '/api/upload/uploadImg',{
                 method:'post',
@@ -46,7 +101,7 @@ export default function Page({ params }: { params: { id: String[] } }) {
 
 
             console.log("response(Image upload): ",resp.details);
-            
+         
 
              if(resp.success)
             {
@@ -66,8 +121,9 @@ export default function Page({ params }: { params: { id: String[] } }) {
                     "Content-type":'application/json',
                   },
                   body:JSON.stringify({
-                    oldId:params.id,
+                    gId:g_id,
                     newId:new_id,
+                    imgId:img_id
                   })
                 })
 
@@ -77,10 +133,15 @@ export default function Page({ params }: { params: { id: String[] } }) {
                 if(resp2.success)
                 {
                   console.log("Modified successfull")
+
+                  //again Showing the new Image
+                  imgRetrieve(new_id);
+                    setId(new_id)
+                      changeSlug(new_id);
                 }
                 else
                 {
-                  console.log("modifications unsuccessfull";)
+                  console.log("modifications unsuccessfull")
                 }
 
 
@@ -101,42 +162,40 @@ export default function Page({ params }: { params: { id: String[] } }) {
     }
 
 
-   useEffect(()=>{
+    //function for removing image
 
-      //  FUNCTION for image retrieval
+    const ImageRemoval=async (e:any)=>
+    {
+      try {
 
-    const imgRetrieve = async (id:string)=>{
-        try {
-             const response = await fetch(process.env.NEXT_PUBLIC_ORIGIN + '/api/retrieve/retrieveImg',{
-                method:'post',
-                headers:{
-                  'Content-type':'application/json'
-                },
-                body:JSON.stringify({id:id})
-            });
-            //setting the base64 string
-            const responseObj = await response.json();
-            
-            // console.log("responseObj: ",responseObj)
-            //here i am pasting the base64String along with required the required string to the src of the img
-            setBase64String({...base64String,img:responseObj.data});
-            // console.log("base64inside:",base64String)
-          
-        } catch (e) {
-            console.log("some error occurred while retrieval: ",e.message)
-        }
+        //1. image removal
 
-        // console.log("base64:",base64String);
+        const response = await fetch(process.env.NEXT_PUBLIC_ORIGIN+'/api/modify/modifyGrievances/removeMedia',{
+          method:'DELETE',
+          body:JSON.stringify({
+            media:'image',
+            id:id,
+            gId:g_id
+          })
+        })
+
+        const resp = await response.json();
+
+        console.log("resp: ",resp);
+
+        //2. upload the removed image on the ui
+
+
+             imgRetrieve(id);
+              changeSlug('null');
+
+      } catch (e) {
+        console.log("got the error while removing the media: ",e.message);
+      }
     }
 
-    imgRetrieve(params.id);
 
-   },[params.id])
-
-
-   useEffect(()=>{
-    // console.log("imgdata; ",base64String.img);
-   },[base64String])
+  
 
   return (
         <>
@@ -157,39 +216,59 @@ export default function Page({ params }: { params: { id: String[] } }) {
         <div className="w-[70%] h-full bg-cyan-300 m-2">
 
             {/*previous image */}
-             {/* <img 
+             <img 
             src={(base64String.img != '')? ("data:image/jpeg;base64,"+base64String.img):"https://images.unsplash.com/photo-1584824486509-112e4181ff6b?auto=format&fit=crop&q=80&w=570&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" } 
-            alt="img" /> */}
+            alt="img" />
 
         </div>
 
         <div className="flex flex-col m-2">
           <div className=" bg-blue-400 h-[60%]">
           try to have drag and drop option here
+
+          <form onSubmit={ImageUpload} >
+
+          <input type="file" onChange={e=> setImageFiles(e.target.files?.[0])}/>
+
+      <button>
+            <input 
+          className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800"
+          type="submit" 
+          value={"Upload"} />
+      </button>
+          </form>
+
           </div>
 
       
              <div className=" bg-purple-400 ">
 
-              
+     
+  
 
-          <button className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
-  <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-     Upload another
-  </span>
-</button>
-
-       <button type="button" className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">Remove Image</button>
+       <button 
+       onClick={ImageRemoval}
+       type="button"
+        className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+        Remove Image</button>
 
 
           </div>
           </div>
+
+          
 
    
         </div>
 
 
       </div>
+
+       <button 
+       onClick={changeSlug}
+       type="button"
+        className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+        change slug</button>
 
       {/* <video   src= {(base64String.vid != '')? ("data:video/mp4;base64,"+base64String.vid):"/videos/DataRetrieve.mp4"}
 controls width="440" height="460"
