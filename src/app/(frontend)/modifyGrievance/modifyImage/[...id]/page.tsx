@@ -25,7 +25,7 @@ export default function Page({ params }: { params: { id: String[] } }) {
     vid:''
    });
 
-
+   //function which help in modifying the slug of the url as per the content
    const changeSlug=async (id:any)=>
    {
     router.push(`/modifyGrievance/modifyImage/${id}/${g_id}`, { scroll: false })
