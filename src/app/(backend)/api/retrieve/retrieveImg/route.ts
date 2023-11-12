@@ -1,5 +1,5 @@
 import { pool } from "@/app/(backend)/config/db";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 
 export async function GET()
@@ -9,7 +9,7 @@ export async function GET()
 
     //Image retrieval from the db 
     //1. collect the img_id from the passed g_id
-    //2. collect the img_data from the collected img_id
+    //2. collect the img_data from t    he collected img_id
 
 
     try {
@@ -18,6 +18,7 @@ export async function GET()
 
         // In order to retrieve data I am sending the exact base64String to the client
         //so that it can be used to fetch the image
+        // console.log("resposnse from image retrieve: ",query.rows[0].new_data);
       
         return NextResponse.json( {
             'message':'got the img_data',
@@ -37,6 +38,44 @@ export async function GET()
         })
         
     }
+}
+
+export async function POST(req:NextRequest){
+
+        let {id} = await req.json();
+
+        try {
+            console.log("body: ",id);
+
+
+                
+         await pool.connect();
+        const query = await pool.query('SELECT new_data FROM images_grievance WHERE img_id = $1',[id]);
+
+        // In order to retrieve data I am sending the exact base64String to the client
+        //so that it can be used to fetch the image
+        // console.log("resposnse from image retrieve: ",query.rows[0].new_data);
+      
+        return NextResponse.json( {
+            'message':'got the img_data',
+            'success':true,
+            'data':await query.rows[0].new_data
+        },{
+            status:200,
+        })
+
+
+
+        } catch (e) {
+            console.log("e(image retrieve) ",e.message)
+             return NextResponse.json( {
+            'message':e.message,
+            'success':false,
+            'data':'',
+        },{
+            status:502,
+        })
+        }
 }
 
 //route for fetching the images

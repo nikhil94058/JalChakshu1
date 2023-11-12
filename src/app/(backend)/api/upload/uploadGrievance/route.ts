@@ -17,9 +17,10 @@ export async function POST(req:NextRequest)
    
 
     console.log("text: ",text);
-    // console.log("user: ",user);    
-    
-             const query = await pool.query('INSERT INTO grievances(message , user_id, user_phone, img_id, video_id, state, region) VALUES ($1,$2,$3,$4,$5,$6,$7)',[text,user_id,user_phone ,img_id,vid_id,user_state,user_region]) 
+    //Please note that those persons whose Image id is <0 should have the image id as null because they are the user who doesn't want to add the image to their grievance
+
+
+             const query = await pool.query('INSERT INTO grievances(message , user_id, user_phone, img_id, vid_id, state, region) VALUES ($1,$2,$3,$4,$5,$6,$7)',[text,user_id,user_phone ,img_id,vid_id,user_state,user_region]) 
 
              const queryResponse = await query.rows[0];
             return NextResponse.json({
