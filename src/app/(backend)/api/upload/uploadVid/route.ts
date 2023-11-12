@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
   try {
             const data = await req.formData();
 
-    console.log("data: ", data);
+    // console.log("data: ", data);
 
     const file: File | null = (await data.get("file")) as unknown as File;
 
