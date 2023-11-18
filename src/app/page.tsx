@@ -2,7 +2,8 @@
 
 
 import { useState } from "react";
-
+import {Home} from "./(frontend)/Page/Home";
+import Link from "next/link";
 export default function Home() {
   const [payload,setPayload] = useState({
     phone:'',
@@ -79,7 +80,44 @@ export default function Home() {
 
   return (
    <>
-   Landing page goes by here
+   <nav>
+  
+
+   <div className="w-[1579px] h-[55px] bg-blue-100 flex ">
+  <div className="text-sky-500 text-2xl font-normal font-nova-script mt-2 ml-4">
+    HydroNauts
+  </div>
+  <div className="relative ml-auto right-3 flex items-center space-x-10">
+  <img className="w-7 h-7" src="https://via.placeholder.com/28x28" alt="Placeholder Image" />
+  <img className="w-7 h-7" src="https://via.placeholder.com/28x28" alt="Placeholder Image" />
+  <img className="w-7 h-7" src="https://via.placeholder.com/28x28" alt="Placeholder Image" />
+  <input
+    type="text"
+    className="w-[173px] h-[27px] px-2 bg-white rounded-[39px] shadow border border-blue-600"
+    placeholder="Login"
+  />
+</div>
+
+
+
+  
+
+  </div>
+
+
+
+   
+  
+    <div className="w-1579 h-55 bg-cyan-50">
+    <ul className="flex justify-between items-center w-1579 h-55 bg-cyan-50 ml-[520px]">
+      <Link href="/"><li className="text-center text-black text-sm font-normal font-['Inter']">Water Network</li></Link>
+      <Link href="/page/survey.tsx"><li className="text-center text-black text-sm font-normal font-['Inter']">Survey</li></Link>
+      <Link href="/page/Grivances"><li className="text-center text-black text-sm font-normal font-['Inter']">Grivences</li></Link>
+      <Link href = "/page/Awareness"><li className="text-center text-black text-sm font-normal font-['Inter']">Awareness</li></Link>
+      <Link href="/page/About"><li className="text-center text-black text-sm font-normal font-['Inter']">About Us</li></Link>
+    </ul>
+    </div>
+   </nav>
 
     <h1>SignIn</h1>
 
